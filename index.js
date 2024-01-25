@@ -31,6 +31,7 @@ const Item = mongoose.model('Item', {
 // });
 
 app.get('/api/items', async (req, res) => {
+    console.log('sdfsdf')
     const items = await Item.find();
     res.json(items);
 });
