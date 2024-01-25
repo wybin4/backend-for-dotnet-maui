@@ -9,7 +9,7 @@ const port = 3000;
 app.use(bodyParser.json());
 app.use(cors());
 
-mongoose.connect('mongodb://admin:admin@localhost:27017', {
+mongoose.connect('mongodb://mongo:9756jeiBYT0zUa1Eo8AI3lVZmD2wXd4k@sfo1.clusters.zeabur.com:30901', {
     useNewUrlParser: true,
     useUnifiedTopology: true
 });
