@@ -15,7 +15,7 @@ mongoose.connect('mongodb://mongo:9756jeiBYT0zUa1Eo8AI3lVZmD2wXd4k@sfo1.clusters
 });
 
 const Item = mongoose.model('Item', {
-    id: mongoose.Types.ObjectId,
+    _id: mongoose.Types.ObjectId,
     text: String,
     description: String,
     date: { type: String, default: new Date().toLocaleDateString() },
@@ -34,8 +34,31 @@ app.get('/', (req, res) => {
 //     success_rate: { type: Number, default: 50 }
 // });
 
+app.use((req, res, next) => {
+    res.jsonOriginal = res.json; 
+
+    res.json = function (data) {
+        if (Array.isArray(data)) {
+            data = data.map(item => {
+                if (item && item._id) {
+                    item.id = item._id;
+                    delete item._id;
+                }
+                return item;
+            });
+        } else if (data && data._id) {
+            data.id = data._id;
+            delete data._id;
+        }
+
+        res.jsonOriginal.call(this, data);
+    };
+
+    next();
+});
+
 app.get('/api/items', async (req, res) => {
-    const items = await Item.find();
+    const items = await Item.find().lean();
     res.json(items);
 });
 
