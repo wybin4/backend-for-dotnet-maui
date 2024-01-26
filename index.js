@@ -15,7 +15,7 @@ mongoose.connect('mongodb://mongo:9756jeiBYT0zUa1Eo8AI3lVZmD2wXd4k@sfo1.clusters
 });
 
 const Item = mongoose.model('Item', {
-    _id: mongoose.Types.ObjectId,
+    id: mongoose.Types.ObjectId,
     text: String,
     description: String,
     date: { type: String, default: new Date().toLocaleDateString() },
@@ -35,7 +35,6 @@ app.get('/', (req, res) => {
 // });
 
 app.get('/api/items', async (req, res) => {
-    console.log('sdfsdf')
     const items = await Item.find();
     res.json(items);
 });
