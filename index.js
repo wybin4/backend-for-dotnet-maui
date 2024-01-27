@@ -35,7 +35,7 @@ app.get('/', (req, res) => {
 // });
 
 app.use((req, res, next) => {
-    res.jsonOriginal = res.json; 
+    res.jsonOriginal = res.json;
 
     res.json = function (data) {
         if (Array.isArray(data)) {
@@ -47,8 +47,10 @@ app.use((req, res, next) => {
                 return item;
             });
         } else if (data && data._id) {
-            data.id = data._id;
-            delete data._id;
+            const dataCopy = { ...data };
+            dataCopy.id = data._id;
+            delete dataCopy._id;
+            data = dataCopy;
         }
 
         res.jsonOriginal.call(this, data);
@@ -63,7 +65,7 @@ app.get('/api/items', async (req, res) => {
 });
 
 app.get('/api/items/:id', async (req, res) => {
-    const item = await Item.findOne({ _id: new mongoose.Types.ObjectId(req.params.id) });
+    const item = await Item.findOne({ _id: new mongoose.Types.ObjectId(req.params.id) }).lean();
     if (!item) {
         return res.status(404).json({ error: 'Item not found' });
     }
@@ -71,13 +73,24 @@ app.get('/api/items/:id', async (req, res) => {
 });
 
 app.post('/api/items', async (req, res) => {
-    const newItem = new Item({ _id: new mongoose.Types.ObjectId(), ...req.body });
+    const newItem = new Item({ _id: new mongoose.Types.ObjectId(req.body.id), ...req.body });
+
     await newItem.save();
-    res.json(newItem);
+    const { _id, text, description, date, importance, category } = newItem;
+
+    const newItemPlain = {
+        id: _id,
+        text,
+        description,
+        date,
+        importance,
+        category
+    };
+    res.json(newItemPlain);
 });
 
 app.put('/api/items/:id', async (req, res) => {
-    const existingItem = await Item.findOne({ _id: new mongoose.Types.ObjectId(req.params.id) });
+    const existingItem = await Item.findOne({ _id: new mongoose.Types.ObjectId(req.params.id) }).lean();
     if (!existingItem) {
         return res.status(404).json({ error: 'Item not found' });
     }
@@ -88,7 +101,7 @@ app.put('/api/items/:id', async (req, res) => {
 });
 
 app.delete('/api/items/:id', async (req, res) => {
-    const item = await Item.findByIdAndDelete({ _id: req.params.id });
+    const item = await Item.findByIdAndDelete({ _id: req.params.id }).lean();
     if (!item) {
         return res.status(404).json({ error: 'Item not found' });
     }
