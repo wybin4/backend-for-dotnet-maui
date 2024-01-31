@@ -9,7 +9,7 @@ const port = process.env.PORT || 3000;
 app.use(bodyParser.json());
 app.use(cors());
 
-mongoose.connect('mongodb://mongo:9756jeiBYT0zUa1Eo8AI3lVZmD2wXd4k@sfo1.clusters.zeabur.com:30901', {
+mongoose.connect('mongodb://mongo:15XbTj2p07nO8UgA6cWx3aq9zrBVC4Yh@hnd1.clusters.zeabur.com:31583', {
     useNewUrlParser: true,
     useUnifiedTopology: true
 });
